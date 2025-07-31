@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christian E. Soriano - GoHighLevel Expert</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    
+    <!-- Internal CSS for Modal -->
+    <style>
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-container {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-container {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            position: sticky;
+            top: 0;
+            background: #022B5A;
+            color: white;
+            padding: 20px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .modal-content {
+            max-height: calc(90vh - 80px);
+            overflow-y: auto;
+            padding: 0;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-width: 100%;
+        }
+
+        .modal-description {
+            padding: 25px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .modal-description h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .modal-description p {
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        .modal-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .modal-tag {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        /* Custom scrollbar for modal content */
+        .modal-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #5a6de8, #6a4499);
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .modal-container {
+                max-width: 95vw;
+                max-height: 95vh;
+                margin: 10px;
+            }
+
+            .modal-header {
+                padding: 15px 20px;
+            }
+
+            .modal-title {
+                font-size: 1.3rem;
+            }
+
+            .modal-description {
+                padding: 20px;
+            }
+        }
+
+        /* Project card cursor pointer */
+        .project-card {
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+    </div>
+
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="logo">Christian Soriano</div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#about">About</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <button class="nav-toggle" id="navToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Mobile close button -->
+    <button class="mobile-close" id="mobileClose">
+        <i class="fas fa-times"></i>
+    </button>
+
+    <header>
+        <div class="header-bg"></div>
+        <div class="header-content">
+            <div class="profile-container">
+                <img src="assets/profile.jpg" alt="Christian Soriano" class="profile-img">
+            </div>
+            <h1>Christian E. Soriano</h1>
+            <p class="subtitle">GoHighLevel Expert • Funnel Designer • Automation Specialist</p>
+            
+            <div class="header-contact-info">
+                <div class="header-contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>christian.soriano.pro@gmail.com</span>
+                </div>
+                <div class="header-contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span>09512084020</span>
+                </div>
+                <div class="header-contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Bohol, Philippines</span>
+                </div>
+            </div>
+
+            <div class="cta-buttons">
+                <a href="#contact" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i>
+                    Start Your Project
+                </a>
+                <a href="#projects" class="btn btn-outline">
+                    <i class="fas fa-eye"></i>
+                    View My Work
+                </a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </header>
+
+    <section id="about">
+        <div class="section-header">
+            <h2>About Me</h2>
+            <p>Transforming businesses through innovative GoHighLevel solutions</p>
+        </div>
+                <div class="about-content">
+                <div class="about-stats">
+            <div class="stat-card">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Commitment to Quality</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">40+</div>
+                <div class="stat-label">Hours of Weekly Availability</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">10+</div>
+                <div class="stat-label">Design & Dev Tools Mastered</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">7</div>
+                <div class="stat-label">Days a Week Open to Inquiries</div>
+            </div>
+        </div>
+
+            <div class="about-text">
+                <p>Hi there! Looking for someone to build your website or funnels that actually drive results? I bring a solid foundation in GoHighLevel with a focus on crafting high-converting landing pages, building effective sales funnels, and setting up smart marketing automation. Everything I create is tailored to support your business goals and deliver a smooth user experience.</p>
+                <p>What sets me apart is my ability to combine technical precision with creative design thinking. I don't just build funnels—I craft conversion experiences that drive real business results. My background in software engineering and database management gives me a unique edge in creating robust, scalable solutions.</p>
+                <p>I'm committed to staying ahead of industry trends and continuously expanding my skill set to deliver cutting-edge solutions that help businesses thrive in the digital landscape.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="services">
+        <div class="section-header">
+            <h2>My Services</h2>
+            <p>Comprehensive GoHighLevel solutions to accelerate your business growth</p>
+        </div>
+        <div class="services-grid">
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-paint-brush"></i>
+                </div>
+                <h3>Landing Page Design</h3>
+                <p>Create stunning, high-converting landing pages that capture leads and drive sales. Optimized for mobile and desktop with A/B testing capabilities.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-filter"></i>
+                </div>
+                <h3>Sales Funnel Development</h3>
+                <p>Build comprehensive sales funnels tailored to your industry with integrated payment processing, lead scoring, and conversion optimization.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-cogs"></i>
+                </div>
+                <h3>Marketing Automation</h3>
+                <p>Set up sophisticated email and SMS campaigns, lead nurturing sequences, and automated follow-ups that work 24/7 to grow your business.</p>
+            </div>
+            <div class="service-card">
+                <div class="service-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <h3>CRM Integration</h3>
+                <p>Streamline your customer relationship management with custom pipelines, automated workflows, and detailed analytics and reporting.</p>
+            </div>
+            
+        </div>
+    </section>
+
+    <section id="skills">
+        <div class="section-header">
+            <h2>Technical Skills</h2>
+            <p>Expertise across multiple technologies and platforms</p>
+        </div>
+        <div class="skills-container">
+            <div class="skill-category">
+                <h3>GoHighLevel Expertise</h3>
+                <div class="skill-item">
+                    <div class="skill-name">
+                        <span>Funnel Builder</span>
+                        <span>95%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 95%"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name">
+                        <span>Automation Workflows</span>
+                        <span>92%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 92%"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name">
+                        <span>CRM Management</span>
+                        <span>90%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 90%"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name">
+                        <span>Landing Pages</span>
+                        <span>98%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 98%"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="skill-category">
+                <h3>Development & Design</h3>
+                <div class="skill-item">
+                    <div class="skill-name">
+                        <span>JavaScript</span>
+                        <span>85%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 85%"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name">
+                        <span>PHP</span>
+                        <span>80%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 80%"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name">
+                        <span>UI/UX Design</span>
+                        <span>88%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 88%"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-name">
+                        <span>Database Management</span>
+                        <span>82%</span>
+                    </div>
+                    <div class="skill-bar">
+                        <div class="skill-progress" style="width: 82%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects">
+        <div class="section-header">
+            <h2>Featured Projects</h2>
+            <p>Real-world solutions that drive measurable results</p>
+        </div>
+                <div class="projects-grid">
+            <!-- Project 1: Real Estate -->
+            <div class="project-card" onclick="openModal('realestateModal')">
+                <div class="project-image">
+                    <i class="fas fa-building"></i> <!-- Real estate icon -->
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">Real Estate Landing Page</h3>
+                    <p class="project-description">Full-stack e-commerce and bartering platform with advanced user management, real-time notifications, and secure payment processing.</p>
+                    <div class="project-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">PHP</span>
+                        <span class="tag">MySQL</span>
+                        <span class="tag">UI/UX</span>
+                    </div>
+                    <div class="project-links">
+                        <span class="project-link">
+                            <i class="fas fa-external-link-alt"></i> View Project
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 2: Dental -->
+            <div class="project-card" onclick="openModal('dentalModal')">
+                <div class="project-image">
+                    <i class="fas fa-tooth"></i> <!-- Dental-specific icon -->
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">Dental Services Funnel</h3>
+                    <p class="project-description">A modern dental website showcasing professional dental services, clinic information, and an integrated appointment booking feature for a seamless user experience.</p>
+                    <div class="project-tags">
+                        <span class="tag">GoHighLevel</span>
+                        <span class="tag">Email Marketing</span>
+                        <span class="tag">CRM</span>
+                    </div>
+                    <div class="project-links">
+                        <span class="project-link">
+                            <i class="fas fa-external-link-alt"></i> View Project
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 3: Yoga -->
+            <div class="project-card" onclick="openModal('yogaModal')">
+                <div class="project-image">
+                    <i class="fas fa-spa"></i> <!-- Spa/Yoga icon -->
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">Yoga Website</h3>
+                    <p class="project-description">A calming yoga website designed to capture leads through email opt-ins and allow visitors to easily book classes online.</p>
+                    <div class="project-tags">
+                        <span class="tag">Sales Funnels</span>
+                        <span class="tag">Automation</span>
+                        <span class="tag">SMS Marketing</span>
+                    </div>
+                    <div class="project-links">
+                        <span class="project-link">
+                            <i class="fas fa-external-link-alt"></i> View Project
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 4: Lead Nurturing -->
+            <div class="project-card" onclick="openModal('nurtureModal')">
+                <div class="project-image">
+                    <i class="fas fa-seedling"></i> <!-- Nurturing icon -->
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">Lead Nurturing Workflow</h3>
+                    <p class="project-description">This automation keeps new leads engaged by sending personalized emails at the right time...</p>
+                    <div class="project-tags">
+                        <span class="tag">Saves time by automating follow-ups</span>
+                        <span class="tag">Increases conversion rates by keeping leads engaged</span>
+                        <span class="tag">Frees up staff to focus on high-value tasks</span>
+                    </div>
+                    <div class="project-links">
+                        <span class="project-link">
+                            <i class="fas fa-external-link-alt"></i> View Project
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 5: Appointment Reminders -->
+            <div class="project-card" onclick="openModal('appointmentModal')">
+                <div class="project-image">
+                    <i class="fas fa-calendar-check"></i> <!-- Reminder/appointment icon -->
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">Appointment Reminder System</h3>
+                    <p class="project-description">This automation sends email and text reminders to clients before their appointments...</p>
+                    <div class="project-tags">
+                        <span class="tag">Reduces no-shows, boosting revenue</span>
+                        <span class="tag">Improves scheduling efficiency</span>
+                        <span class="tag">Enhances client satisfaction with timely reminders</span>
+                    </div>
+                    <div class="project-links">
+                        <span class="project-link">
+                            <i class="fas fa-external-link-alt"></i> View Project
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 6: Post-Service Follow-up -->
+            <div class="project-card" onclick="openModal('followupModal')">
+                <div class="project-image">
+                    <i class="fas fa-envelope-open-text"></i> <!-- Follow-up icon -->
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">Post-Service Follow-up</h3>
+                    <p class="project-description">This automation reaches out after a service to ask for feedback or reviews...</p>
+                    <div class="project-tags">
+                        <span class="tag">Builds a strong reputation with positive reviews</span>
+                        <span class="tag">Encourages repeat business and referrals</span>
+                        <span class="tag">Provides insights to improve service quality</span>
+                    </div>
+                    <div class="project-links">
+                        <span class="project-link">
+                            <i class="fas fa-external-link-alt"></i> View Project
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 7: Re-engagement -->
+            <div class="project-card" onclick="openModal('reengagementModal')">
+                <div class="project-image">
+                    <i class="fas fa-recycle"></i> <!-- Re-engagement icon -->
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">Re-engagement Campaign</h3>
+                    <p class="project-description">This automation wins back inactive customers with tailored offers...</p>
+                    <div class="project-tags">
+                        <span class="tag">Recovers lost revenue from lapsed customers</span>
+                        <span class="tag">Strengthens loyalty with personalized offers</span>
+                        <span class="tag">Boosts sales without extra marketing spend</span>
+                    </div>
+                    <div class="project-links">
+                        <span class="project-link">
+                            <i class="fas fa-external-link-alt"></i> View Project
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project 8: No-Show Follow-up -->
+            <div class="project-card" onclick="openModal('noshowModal')">
+                <div class="project-image">
+                    <i class="fas fa-user-clock"></i> <!-- Missed appointment icon -->
+                </div>
+                <div class="project-content">
+                    <h3 class="project-title">No-Show Follow-up Automation</h3>
+                    <p class="project-description">This automation targets missed appointments by gently nudging no-show clients to rebook...</p>
+                    <div class="project-tags">
+                        <span class="tag">Recovers missed sales or sessions</span>
+                        <span class="tag">Keeps your calendar full with less manual chasing</span>
+                        <span class="tag">Maintains professionalism with automated follow-ups</span>
+                    </div>
+                    <div class="project-links">
+                        <span class="project-link">
+                            <i class="fas fa-external-link-alt"></i> View Project
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Project Modals -->
+    <div class="modal-overlay" id="realestateModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Real Estate Landing Page</h3>
+                <button class="modal-close" onclick="closeModal('realestateModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <img src="assets/realestate.png" alt="Real Estate Landing Page" class="modal-image">
+                <!-- <div class="modal-description">
+                    <h3>Project Overview</h3>
+                    <p>A comprehensive full-stack e-commerce and bartering platform that revolutionizes online trading. This platform combines traditional e-commerce functionality with innovative bartering features, allowing users to both buy/sell items and exchange goods and services.</p>
+                    <p>The platform features advanced user management systems, real-time notifications for transactions and messages, secure payment processing integration, and a sophisticated matching algorithm for bartering opportunities.</p>
+                    <p>Built with modern web technologies and following best practices for security, scalability, and user experience design.</p>
+                    <div class="modal-tags">
+                        <span class="modal-tag">JavaScript</span>
+                        <span class="modal-tag">PHP</span>
+                        <span class="modal-tag">MySQL</span>
+                        <span class="modal-tag">UI/UX Design</span>
+                        <span class="modal-tag">Responsive Design</span>
+                        <span class="modal-tag">Security</span>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="dentalModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Dental Services Funnel</h3>
+                <button class="modal-close" onclick="closeModal('dentalModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <img src="assets/dental1.png" alt="Dental Services Funnel" class="modal-image">
+                
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="yogaModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Yoga Website</h3>
+                <button class="modal-close" onclick="closeModal('yogaModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <img src="assets/yoga.png" alt="Yoga Website" class="modal-image">
+                
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="nurtureModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Lead nurture Automation</h3>
+                <button class="modal-close" onclick="closeModal('nurtureModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <img src="assets/nurture.png" alt="Lead nurture Automation" class="modal-image">
+               
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="appointmentModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Appointment Reminder Automation</h3>
+                <button class="modal-close" onclick="closeModal('appointmentModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <img src="assets/appointment.png" alt="Appointment" class="modal-image">
+                
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal-overlay" id="followupModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3 class="modal-title">Post-Service Follow-up Automation</h3>
+                <button class="modal-close" onclick="closeModal('followupModal')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-content">
+                <img src="assets/followup.png" alt="Education Funnel" class="modal-image">
+                
+            </div>
+        </div>
+    </div>
+
+        <div class="modal-overlay" id="reengagementModal">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h3 class="modal-title">Re-engagement Campaign</h3>
+                    <button class="modal-close" onclick="closeModal('reengagementModal')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-content">
+                    <img src="assets/reengagement.png" alt="Education Funnel" class="modal-image">
+                    
+                </div>
+            </div>
+        </div>
+
+        <div class="modal-overlay" id="noshowModal">
+            <div class="modal-container">
+                <div class="modal-header">
+                    <h3 class="modal-title">Re-engagement Campaign</h3>
+                    <button class="modal-close" onclick="closeModal('noshowModal')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="modal-content">
+                    <img src="assets/noshow.png" alt="Education Funnel" class="modal-image">
+                    
+                </div>
+            </div>
+        </div>
+
+
+
+    <section id="testimonials">
+        <div class="section-header">
+            <h2>Client Testimonials</h2>
+            <p>What my clients say about working with me</p>
+        </div>
+        <div class="testimonials-container">
+            <div class="testimonial-card">
+                <div class="quote-icon">
+                    <i class="fas fa-quote-right"></i>
+                </div>
+                <p class="testimonial-quote">"Christian transformed our lead generation completely. Our conversion rates increased by 35% within the first month of implementing his GoHighLevel funnel system."</p>
+                <!-- <div class="testimonial-author">Sarah Martinez</div>
+                <div class="testimonial-role">Marketing Director, TechStart</div> -->
+            </div>
+            <div class="testimonial-card">
+                <div class="quote-icon">
+                    <i class="fas fa-quote-right"></i>
+                </div>
+                <p class="testimonial-quote">"The automation workflows Christian built for us saved us 20 hours per week. His attention to detail and technical expertise are outstanding."</p>
+                <!-- <div class="testimonial-author">Mike Johnson</div>
+                <div class="testimonial-role">CEO, Growth Agency</div> -->
+            </div>
+            <div class="testimonial-card">
+                <div class="quote-icon">
+                    <i class="fas fa-quote-right"></i>
+                </div>
+                <p class="testimonial-quote">""Christian took the time to understand our business and delivered a funnel that actually brought in leads. The process was smooth, and the results spoke for themselves."</p>
+                <!-- <div class="testimonial-author">Lisa Chen</div>
+                <div class="testimonial-role">Founder, Digital Solutions Co.</div> -->
+            </div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="section-header">
+            <h2>Let's Work Together</h2>
+            <p>Ready to transform your business with powerful GoHighLevel solutions?</p>
+        </div>
+        <div class="contact-container">
+            <div class="contact-cta">
+                <h3>Get In Touch</h3>
+                <p>Have a project in mind? Let's discuss how I can help transform your business with GoHighLevel solutions. Reach out through any of the methods below.</p>
+                <a href="mailto:christian.soriano.pro@gmail.com" class="btn btn-primary">
+                    <i class="fas fa-envelope"></i> Send Me an Email
+                </a>
+            </div>
+            
+            <div class="contact-methods">
+                <div class="contact-method">
+                    <div class="contact-icon-lg">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <h4>Email</h4>
+                    <p>christian.soriano.pro@gmail.com</p>
+                </div>
+                
+                <div class="contact-method">
+                    <div class="contact-icon-lg">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <h4>Phone</h4>
+                    <p>09512084020</p>
+                </div>
+                
+                <div class="contact-method">
+                    <div class="contact-icon-lg">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <h4>Location</h4>
+                    <p>Bohol, Philippines</p>
+                </div>
+            </div>
+            
+            <div class="contact-social">
+                <h4>Connect With Me</h4>
+                <div class="social-links">
+                    <a href="#" class="social-link">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="#" class="social-link">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="social-link">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#" class="social-link">
+                        <i class="fab fa-facebook"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <p>© 2025 Christian E. Soriano. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Modal Functions
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto'; // Restore background scrolling
+        }
+
+        // Close modal when clicking outside
+        document.addEventListener('click', function(e) {
+            if (e.target.classList.contains('modal-overlay')) {
+                e.target.classList.remove('active');
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                const activeModal = document.querySelector('.modal-overlay.active');
+                if (activeModal) {
+                    activeModal.classList.remove('active');
+                    document.body.style.overflow = 'auto';
+                }
+            }
+        });
+
+        // Loading screen
+        window.addEventListener('load', function() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            setTimeout(() => {
+                loadingScreen.classList.add('fade-out');
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }, 1500);
+        });
+
+        // Navbar scroll effect
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 100) {
+                navbar.classList.add('visible');
+            } else {
+                navbar.classList.remove('visible');
+            }
+        });
+
+        // Mobile navigation toggle
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+        const mobileClose = document.getElementById('mobileClose');
+
+        function toggleMenu() {
+            navMenu.classList.toggle('active');
+            const icon = navToggle.querySelector('i');
+            if (navMenu.classList.contains('active')) {
+                icon.classList.replace('fa-bars', 'fa-times');
+                mobileClose.classList.add('visible');
+            } else {
+                icon.classList.replace('fa-times', 'fa-bars');
+                mobileClose.classList.remove('visible');
+            }
+        }
+
+        navToggle.addEventListener('click', toggleMenu);
+        mobileClose.addEventListener('click', toggleMenu);
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                    // Close mobile menu if open
+                    if (navMenu.classList.contains('active')) {
+                        toggleMenu();
+                    }
+                }
+            });
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Animate skill bars
+                    const skillBars = entry.target.querySelectorAll('.skill-progress');
+                    skillBars.forEach(bar => {
+                        const width = bar.style.width;
+                        bar.style.width = '0%';
+                        setTimeout(() => {
+                            bar.style.width = width;
+                        }, 500);
+                    });
+                }
+            });
+        }, observerOptions);
+
+        // Observe all sections
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        // Typing effect for header subtitle
+        const subtitle = document.querySelector('.subtitle');
+        const text = subtitle.textContent;
+        subtitle.textContent = '';
+        let i = 0;
+
+        function typeWriter() {
+            if (i < text.length) {
+                subtitle.textContent += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 100);
+            }
+        }
+
+        setTimeout(typeWriter, 2000);
+
+        // Parallax effect for floating shapes
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const shapes = document.querySelectorAll('.shape');
+            
+            shapes.forEach((shape, index) => {
+                const speed = 0.2 + (index * 0.1);
+                shape.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+
+        // Add hover effects to cards (excluding project cards as they now have onclick)
+        document.querySelectorAll('.service-card, .testimonial-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Stats counter animation
+        function animateStats() {
+            const statNumbers = document.querySelectorAll('.stat-number');
+            
+            statNumbers.forEach(stat => {
+                const target = parseInt(stat.textContent);
+                const increment = target / 100;
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        stat.textContent = target + (stat.textContent.includes('%') ? '%' : '+');
+                        clearInterval(timer);
+                    } else {
+                        stat.textContent = Math.floor(current) + (stat.textContent.includes('%') ? '%' : '+');
+                    }
+                }, 20);
+            });
+        }
+
+        // Trigger stats animation when about section is visible
+        const aboutSection = document.getElementById('about');
+        const statsObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateStats();
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.5 });
+
+        statsObserver.observe(aboutSection);
+    </script>
+</body>
+</html>
